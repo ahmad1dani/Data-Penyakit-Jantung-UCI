@@ -1,0 +1,112 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+
+# Baca file CSV
+file_path = 'C:\DANI/heart_disease_uci.csv'
+data = pd.read_csv(file_path)
+
+# Tampilkan seluruh data dari atas sampai bawah
+data
+
+# Tampilkan 5 baris pertama
+print("5 Baris Pertama:\n", data.head())
+
+  # Tampilkan 5 baris terakhir
+print("\n5 Baris Terakhir:\n", data.tail())
+
+  # Cek nilai missing
+missing_values = data.isnull().sum()
+print("Jumlah Nilai Missing di Setiap Kolom:\n", missing_values)
+
+  # Menghitung mean hanya untuk kolom numerik
+mean_values = data.mean(numeric_only=True)
+
+# Menampilkan mean
+print("Mean:\n", mean_values)
+
+  # Menghitung median hanya untuk kolom numerik
+median_values = data.median(numeric_only=True)
+
+# Menampilkan median
+print("Median:\n", median_values)
+
+  # Menghitung mode hanya untuk kolom numerik
+mode_values = data.mode(numeric_only=True).iloc[0]
+
+# Menampilkan mode
+print("Mode:\n", mode_values)
+
+  # Menghitung standar deviasi hanya untuk kolom numerik
+std_dev_values = data.std(numeric_only=True)
+
+# Menampilkan 
+print("Standar deviasi:\n",std_dev_values)
+
+  # Menghitung skewness hanya untuk kolom numerik
+skewness_values = data.skew(numeric_only=True)
+
+#Menampilkan skwewness 
+print("Skewness:\n",skewness_values)
+
+  # Menghitung kurtosis hanya untuk kolom numerik
+kurtosis_values = data.kurtosis(numeric_only=True)
+
+#Menampilkan kurtosis 
+print("Kurtosis\n",kurtosis_values)
+
+  # Pilih hanya kolom numerik
+numerical_data = data.select_dtypes(include=[float, int])
+
+# Menghitung korelasi antar variabel numerik
+correlation_matrix = numerical_data.corr()
+
+# Menampilkan matriks korelasi
+print("Matriks Korelasi:\n", correlation_matrix)
+
+  # Buat histogram dan box plot untuk setiap variabel numerik
+for column in numerical_data.columns:
+    plt.figure(figsize=(12, 6))
+    
+    # Histogram
+    plt.subplot(1, 2, 1)
+    plt.hist(numerical_data[column].dropna(), bins=30, edgecolor='black')
+    plt.title(f'Histogram {column}')
+    plt.xlabel(column)
+    plt.ylabel('Frekuensi')
+    
+    # Box plot
+    plt.subplot(1, 2, 2)
+    plt.boxplot(numerical_data[column].dropna(), vert=False)
+    plt.title(f'Box Plot {column}')
+    plt.xlabel(column)
+    
+    plt.suptitle('Data Penyakit Jantung UCI')  # Judul keseluruhan untuk figure
+    plt.tight_layout(rect=[0, 0, 1, 0.96])  # Menyesuaikan tata letak agar judul tidak tertutup
+    plt.show()
+
+
+  # Pilih variabel numerik
+numerical_data = data.select_dtypes(include=['number'])
+
+# Hitung matriks korelasi
+correlation_matrix = numerical_data.corr()
+
+# Menghilangkan korelasi dengan dirinya sendiri (nilai diagonal) dan bagian atas matriks
+mask = np.triu(np.ones_like(correlation_matrix, dtype=bool), k=1)
+masked_corr = correlation_matrix.where(~mask)
+
+# Temukan pasangan variabel dengan korelasi tertinggi
+max_corr = masked_corr.stack().idxmax()
+max_corr_value = masked_corr.stack().max()
+
+# Ambil nama variabel yang berkorelasi tinggi
+var1, var2 = max_corr
+
+# Buat scatter plot untuk pasangan variabel dengan korelasi tinggi
+plt.figure(figsize=(10, 6))
+sns.scatterplot(data=numerical_data, x=var1, y=var2)
+plt.title(f'Scatter Plot antara {var1} dan {var2} (Korelasi: {max_corr_value:.2f}) - Data Penyakit Jantung UCI')
+plt.ylabel(var2)
+plt.show()
